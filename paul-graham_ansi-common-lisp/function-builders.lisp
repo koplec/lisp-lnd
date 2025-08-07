@@ -40,3 +40,4 @@ on-lispにもfinとして定義があった"
 
 (defun always (x)
   #'(lambda (&rest args) x))
+
