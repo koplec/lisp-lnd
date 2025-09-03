@@ -6,6 +6,12 @@
 (defun mag (x y z)
   (sqrt (+ (sq x) (sq y) (sq z))))
 
+
+
+(declaim
+ (ftype (function (number number number)
+		  (values number number number))
+	unit-vector))
 (defun unit-vector (x y z)
   (let ((d (mag x y z)))
     (values (/ x d) (/ y d) (/ z d))))
@@ -58,7 +64,7 @@
   )
 
 (defparameter *world* nil)
-(defconstant eye
+(defparameter eye
   ;eye exists above the plane and is positiond on the z-axis, 200units from the origin
   (make-point :x 0 :y 0 :z 200))
 
@@ -82,6 +88,8 @@
 		   (- y (y eye))
 		   (- 0 (z eye))) ;;目からスクリーンx,yへの単位ベクトル
     (round (* (sendray eye xr yr zr) 255))))
+
+
 
 (defun sendray (pt xr yr zr)
   ;;目から(xr yr zr)で表される単位ベクトル方向に向けたときのレイ・トレーシング計算
