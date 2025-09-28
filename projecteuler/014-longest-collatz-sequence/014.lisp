@@ -1,3 +1,11 @@
+(defpackage :pe014
+  (:use :cl :kplb)
+  (:export :collatz-length
+	   :memorized-collatz-length
+	   ))
+
+(in-package :pe014)
+
 (defun collatz-num (n)
   (if (evenp n) (/ n 2)
       (+ (* 3 n) 1)))
@@ -9,19 +17,20 @@
 		 (rec (collatz-num num) (1+ len)))))
     (rec n 1)))
 
+;;; (collatz-length 2) 2
+;;; (collatz-length 13) 10
 
-(defparameter *collatz-table* (make-hash-table))
+(defparameter *collatz-table* (make-hash-table :test #'eql))
+(setf (gethash 1 *collatz-table*) 1)
 (defun memorized-collatz-length (n)
-  (if (= n 1)
-      1
-      (if (gethash n *collatz-table*)
-	  (gethash n *collatz-table*)
-	  (progn
-	    (let* ((next-collatz-num (collatz-num n))
-		   (next-collatz-len (memorized-collatz-length next-collatz-num))
-		   (collatz-len (1+ (memorized-collatz-length next-collatz-num))))
-	      (setf (gethash n *collatz-table*) collatz-len)
-	      collatz-len)))))
+  ;; multiple-value-bindで返り値の2番めで判定する
+  (multiple-value-bind (v ok?) (gethash n *collatz-table*)
+    (if ok? v
+	(let* ((next-collatz-num (collatz-num n))
+	       (next-collatz-len (memorized-collatz-length next-collatz-num))
+	       (collatz-len (1+ next-collatz-len)))
+	  (setf (gethash n *collatz-table*) collatz-len)
+	  collatz-len))))
 	      
 	      
 (defun solve-014 (n)
@@ -36,3 +45,5 @@
 	      (setf max-num i)))))))
 
 ;;; (solve-014 1000000) -> 525 837799
+;;; (solve-014 2) -> 1 1
+;;; (solve-014 10) -> 20 9
